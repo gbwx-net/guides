@@ -65,11 +65,13 @@ https://github.com/bitcoin/bitcoin/releases
 :information_source: Please be aware that the internal data structure of Bitcoin Core changed from 0.16 to 0.17. If you download the blockchain using a different computer, make sure to use the same version. If you upgrade to 0.17, the data structure is converted automatically (can take a few hours) and it's not possible to use that data with older versions anymore.
 
 ### How to upgrade LND? 
-Upgrading can lead to a number of issues. Please **always** read the [LND release notes](https://github.com/lightningnetwork/lnd/releases/tag/v0.5-beta) completely to understand the changes. They also cover a lot of additional topics and many new features not mentioned here. 
+Upgrading can lead to a number of issues. Please **always** read the [LND release notes](https://github.com/lightningnetwork/lnd/releases/tag/v0.5.2-beta) completely to understand the changes. They also cover a lot of additional topics and many new features not mentioned here. 
 
 * You might want to create a [backup of your system](raspibolt_65_system-recovery.md) first.  
 
-* When **upgrading to LND 0.5**, I would also recommend to close your channels first, as there have been a number of issues with stuck funds that require very technical work to resolve them.
+* When **upgrading to LND 0.5.x**, I would also recommend to close your channels first, as there have been a number of issues with stuck funds that require very technical work to resolve them.
+
+* If **upgrading from LND 0.5 to 0.5.2** the nodes entire chainstate needs to be rescanned from the its individual 'birthday block' and can take a number of hours on a pi. While the rescan is going on your BTC wallet balance will drop and none of your channels will reconnect. You will recieve "[ERR] LNWL: Failed to process consensus server notification" while the rescan is in progress and LND recieves a new block notification from bitcoind.
 
 * As "admin" user, stop lnd system unit  
   `$ sudo systemctl stop lnd`
@@ -81,27 +83,27 @@ Upgrading can lead to a number of issues. Please **always** read the [LND releas
   ```
   $ cd /home/admin/download
   $  rm -f lnd-linux* manifest* pgp_keys.asc
-  $ wget https://github.com/lightningnetwork/lnd/releases/download/v0.5-beta/lnd-linux-armv7-v0.5-beta.tar.gz
-  $ wget https://github.com/lightningnetwork/lnd/releases/download/v0.5-beta/manifest-v0.5-beta.txt
-  $ wget https://github.com/lightningnetwork/lnd/releases/download/v0.5-beta/manifest-v0.5-beta.txt.sig
+  $ wget https://github.com/lightningnetwork/lnd/releases/download/v0.5.2-beta/lnd-linux-armv7-v0.5.2-beta.tar.gz
+  $ wget https://github.com/lightningnetwork/lnd/releases/download/v0.5.2-beta/manifest-v0.5.2-beta.txt
+  $ wget https://github.com/lightningnetwork/lnd/releases/download/v0.5.2-beta/manifest-v0.5.2-beta.txt.sig
   $ wget https://keybase.io/roasbeef/pgp_keys.asc
   
-  $ sha256sum --check manifest-v0.5-beta.txt --ignore-missing
-  > lnd-linux-armv7-v0.5-beta.tar.gz: OK
+  $ sha256sum --check manifest-v0.5.2-beta.txt --ignore-missing
+  > lnd-linux-armv7-v0.5.2-beta.tar.gz: OK
   
   $ gpg ./pgp_keys.asc
   > BD599672C804AF2770869A048B80CD2BB8BD8132
   
   $ gpg --import ./pgp_keys.asc
-  $ gpg --verify manifest-v0.5-beta.txt.sig
+  $ gpg --verify manifest-v0.5.2-beta.txt.sig
   > gpg: Good signature from "Olaoluwa Osuntokun <laolu32@gmail.com>" [unknown]
   > Primary key fingerprint: BD59 9672 C804 AF27 7086  9A04 8B80 CD2B B8BD 8132
   >      Subkey fingerprint: F803 7E70 C12C 7A26 3C03  2508 CE58 F7F8 E20F D9A2
   
-  $ tar -xzf lnd-linux-armv7-v0.5-beta.tar.gz
-  $ sudo install -m 0755 -o root -g root -t /usr/local/bin lnd-linux-armv7-v0.5-beta/*
+  $ tar -xzf lnd-linux-armv7-v0.5.2-beta.tar.gz
+  $ sudo install -m 0755 -o root -g root -t /usr/local/bin lnd-linux-armv7-v0.5.2-beta/*
   $ lnd --version
-  > lnd version 0.5.0-beta commit=3b2c807288b1b7f40d609533c1e96a510ac5fa6d
+  > lnd version 0.5.2-beta commit=v0.5.2-beta
   ```
 
 * Starting with this release, LND expects two different ZMQ sockets for blocks and transactions. Edit `bitcoin.conf`, save and exit.  
